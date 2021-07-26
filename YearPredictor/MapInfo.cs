@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Osu20XXML.Model;
 
-namespace YearPredictor
+namespace Osu20XXML.WindowsForm
+
 {
     public class MapInfo
     {
@@ -51,5 +53,21 @@ namespace YearPredictor
         public float AvgDeltaTime { get => avgDeltaTime; set => avgDeltaTime = value; }
         public float StddevDeltaTime { get => stddevDeltaTime; set => stddevDeltaTime = value; }
         public float DiffVariance { get => diffVariance; set => diffVariance = value; }
+
+        public ModelInput ConvertToModelInput()
+        {
+            ModelInput newModel = new ModelInput()
+            {
+                Hp = this.Hp,
+                Cs = this.Cs,
+                Od = this.Od,
+                Ar = this.Ar,
+                AvgDeltaTime = this.AvgDeltaTime,
+                StddevDeltaTime = this.StddevDeltaTime,
+                DiffVariance = this.DiffVariance,
+            };
+
+            return newModel;
+        }
     }
 }

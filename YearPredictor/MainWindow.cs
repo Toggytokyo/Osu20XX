@@ -11,8 +11,9 @@ using System.Runtime.InteropServices;
 using System.IO;
 using System.IO.Compression;
 using System.Text.RegularExpressions;
+using Osu20XXML.Model;
 
-namespace YearPredictor
+namespace Osu20XXML.WindowsForm
 {
     public partial class MainWindow : Form
     {
@@ -165,6 +166,12 @@ namespace YearPredictor
             UpdateMapList();
         }
 
+        public void EvaluateMap(MapInfo mapInfo)
+        {
+            var predictedYear = ConsumeModel.Predict(mapInfo.ConvertToModelInput());
+            YearLabel.Text = predictedYear.Prediction;
+        }
+
         //Function to load files from the given  filepaths with a BackgroundWorker
         private void LoadFiles(string[] filePaths, BackgroundWorker worker, DoWorkEventArgs e)
         {
@@ -211,6 +218,7 @@ namespace YearPredictor
                                         }
                                         else
                                         {
+                                            Console.WriteLine("Diff: '" + diffMatch.Groups[2].Value + "'");
                                             newMap.DiffName = diffMatch.Groups[2].Value;
                                         }
                                     }
@@ -228,27 +236,99 @@ namespace YearPredictor
                         //Initializing a new MapInfo container and loading in the metadata from the .osu file
                         //Its faster to read the entire map into a string and run regex checks
                         MapInfo newMap = new MapInfo();
-                        string fileText = File.ReadAllText(path);
-
-                        Regex titleRx = new Regex(@"(Title:)(.+)", RegexOptions.Compiled);
-                        Match titleMatch = titleRx.Match(fileText);
-                        if (titleMatch.Success)
+                        string fileText = "";
+                        List<float> deltaTimes = new List<float>();
+                        List<float> diffs = new List<float>();
+                        using (StreamReader sr = File.OpenText(path))
                         {
-                            newMap.MapName = titleMatch.Groups[2].Value;
+                            string line = null;
+                            while (!(line = sr.ReadLine()).Contains("[HitObjects]"))
+                            {
+                                fileText += line + "\n";
+                            }
+
+                            float last_x = float.MinValue;
+                            float last_y = float.MinValue;
+                            float last_time = float.MinValue;
+                            Regex hitRx = new Regex(@"(-?\d+\.?\d*),(-?\d+\.?\d*),(-?\d+\.?\d*)", RegexOptions.Compiled); ;
+                            Match hitRxMatch;
+                            while ((line = sr.ReadLine()) != null) {
+                                hitRxMatch = hitRx.Match(line);
+                                if(hitRxMatch.Success)
+                                {
+                                    float x = float.Parse(hitRxMatch.Groups[1].Value);
+                                    float y = float.Parse(hitRxMatch.Groups[2].Value);
+                                    float time = float.Parse(hitRxMatch.Groups[3].Value);
+                                    if(last_x != float.MinValue && last_y != float.MinValue && last_time != float.MinValue)
+                                    {
+                                        float distance = (float)Math.Sqrt(Math.Pow(x - last_x, 2) + Math.Pow(y-last_y, 2));
+                                        float deltaTime = time - last_time;
+                                        if (deltaTime != 0)
+                                            diffs.Add(distance / deltaTime);
+                                        deltaTimes.Add(deltaTime);
+                                    }
+                                    last_x = x;
+                                    last_y = y;
+                                    last_time = time;
+                                }
+                            }
+                        }
+                        newMap.AvgDeltaTime = Enumerable.Average(deltaTimes);
+                        newMap.StddevDeltaTime = (float)Math.Sqrt(deltaTimes.Average(v => Math.Pow(v - newMap.AvgDeltaTime, 2)));
+                        float diffAverage = Enumerable.Average(diffs);
+                        newMap.DiffVariance = (float)Math.Sqrt(diffs.Average(v => Math.Pow(v - diffAverage, 2))) / diffAverage;
+                        Console.WriteLine(Enumerable.Average(deltaTimes).ToString() + " " + ((float)Math.Sqrt(deltaTimes.Average(v => Math.Pow(v - newMap.AvgDeltaTime, 2)))).ToString() + " " + ((float)Math.Sqrt(diffs.Average(v => Math.Pow(v - diffAverage, 2))) / diffAverage).ToString());
+                        Regex rx;
+                        Match rxMatch;
+
+                        rx = new Regex(@"(Title:)(\w+)", RegexOptions.Compiled);
+                        rxMatch = rx.Match(fileText);
+                        if (rxMatch.Success)
+                        {
+                            newMap.MapName = rxMatch.Groups[2].Value;
                         }
 
-                        Regex diffRx = new Regex(@"(Version:)(.+)", RegexOptions.Compiled);
-                        Match diffMatch = diffRx.Match(fileText);
-                        if (diffMatch.Success)
+                        rx = new Regex(@"(Version:)(\w+)", RegexOptions.Compiled);
+                        rxMatch = rx.Match(fileText);
+                        if (rxMatch.Success)
                         {
-                            if (diffMatch.Groups[2].Value == "")
-                            {
-                                newMap.DiffName = "N/A";
-                            }
-                            else
-                            {
-                                newMap.DiffName = diffMatch.Groups[2].Value;
-                            }
+                              newMap.DiffName = rxMatch.Groups[2].Value;
+                        }
+                        else
+                        {
+                            newMap.DiffName = "N/A";
+                        }
+
+                        rx = new Regex(@"(HPDrainRate:)(\d*.?\d*)", RegexOptions.Compiled);
+                        rxMatch = rx.Match(fileText);
+                        if (rxMatch.Success)
+                        {
+                            newMap.Hp = float.Parse(rxMatch.Groups[2].Value);
+                        }
+
+                        rx = new Regex(@"(CircleSize:)(\d*.?\d*)", RegexOptions.Compiled);
+                        rxMatch = rx.Match(fileText);
+                        if (rxMatch.Success)
+                        {
+                            newMap.Cs = float.Parse(rxMatch.Groups[2].Value);
+                        }
+
+                        rx = new Regex(@"(OverallDifficulty:)(\d*.?\d*)", RegexOptions.Compiled);
+                        rxMatch = rx.Match(fileText);
+                        if (rxMatch.Success)
+                        {
+                            newMap.Od = float.Parse(rxMatch.Groups[2].Value);
+                        }
+
+                        rx = new Regex(@"(ApproachRate:)(\d*.?\d*)", RegexOptions.Compiled);
+                        rxMatch = rx.Match(fileText);
+                        if (rxMatch.Success)
+                        {
+                            newMap.Ar = float.Parse(rxMatch.Groups[2].Value);
+                        } 
+                        else
+                        {
+                            newMap.Ar = newMap.Od;
                         }
 
                         //Create a new MapPanel and add it to our list of MapPanels
@@ -304,14 +384,5 @@ namespace YearPredictor
 
         #endregion
 
-        private void toolStripContainer1_ContentPanel_Load(object sender, EventArgs e)
-        {
-
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

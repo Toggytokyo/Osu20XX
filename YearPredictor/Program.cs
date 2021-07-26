@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace YearPredictor
+namespace Osu20XXML.WindowsForm
 {
     static class Program
     {

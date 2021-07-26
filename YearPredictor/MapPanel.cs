@@ -4,7 +4,8 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace YearPredictor
+namespace Osu20XXML.WindowsForm
+
 {
     public class MapPanel : System.Windows.Forms.Panel
     {
@@ -26,6 +27,7 @@ namespace YearPredictor
             this.Size = new Size(384, 50);
             this.BackColor = Color.DarkGray;
             this.BorderStyle = BorderStyle.FixedSingle;
+            this.Click += new System.EventHandler(this.Map_Clicked);
 
             DeleteButton = new Button();
             DeleteButton.AutoSize = false;
@@ -36,12 +38,12 @@ namespace YearPredictor
             DeleteButton.Click += new System.EventHandler(this.Delete_Clicked);
 
             NameLabel = new Label();
-            NameLabel.BorderStyle = BorderStyle.FixedSingle;
             NameLabel.AutoSize = false;
             NameLabel.Location = new Point(50, 0);
             NameLabel.Size = new Size(334,25);
             NameLabel.TextAlign = ContentAlignment.MiddleLeft;
             NameLabel.Text = associatedMapInfo.MapName;
+            NameLabel.Click += new System.EventHandler(this.Map_Clicked);
 
             DiffLabel = new Label();
             DiffLabel.AutoSize = false;
@@ -49,6 +51,7 @@ namespace YearPredictor
             DiffLabel.Size = new Size(334, 25);
             DiffLabel.TextAlign = ContentAlignment.MiddleLeft;
             DiffLabel.Text = associatedMapInfo.DiffName;
+            DiffLabel.Click += new System.EventHandler(this.Map_Clicked);
 
             this.Controls.Add(DeleteButton);
             this.Controls.Add(NameLabel);
@@ -75,6 +78,11 @@ namespace YearPredictor
         private void Delete_Clicked(object sender, System.EventArgs e)
         {
             mainRef.DeleteMap(this);
+        }
+
+        private void Map_Clicked(object sender, System.EventArgs e)
+        {
+            mainRef.EvaluateMap(this.associatedMapInfo);
         }
     }
 }

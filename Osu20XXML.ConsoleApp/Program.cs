@@ -12,13 +12,13 @@ namespace Osu20XXML.ConsoleApp
             // Create single instance of sample data from first line of dataset for model input
             ModelInput sampleData = new ModelInput()
             {
-                Hp = 6F,
-                Cs = 4F,
-                Od = 6F,
-                Ar = 6F,
-                AvgDeltaTime = 691.715F,
-                StddevDeltaTime = 1426.76F,
-                DiffVariance = 0.5143238F,
+                Hp = 5F,
+                Cs = 3.8F,
+                Od = 5.5F,
+                Ar = 7F,
+                AvgDeltaTime = 450.510362694300F,
+                StddevDeltaTime = 794.7325131292938F,
+                DiffVariance = 0.2933659558799869F,
             };
 
             // Make a single prediction on the sample data and print results

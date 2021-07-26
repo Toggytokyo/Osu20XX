@@ -1,5 +1,6 @@
 ﻿
-namespace YearPredictor
+namespace Osu20XXML.WindowsForm
+
 {
     partial class MainWindow
     {
@@ -49,7 +50,7 @@ namespace YearPredictor
             this.ExitButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
             this.ExitButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.Silver;
             this.ExitButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ExitButton.Image = global::YearPredictor.Properties.Resources.exit;
+            this.ExitButton.Image = global::Osu20XXML.WindowsForm.Properties.Resources.exit;
             this.ExitButton.Location = new System.Drawing.Point(775, 0);
             this.ExitButton.Margin = new System.Windows.Forms.Padding(0);
             this.ExitButton.Name = "ExitButton";
@@ -156,7 +157,7 @@ namespace YearPredictor
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
             this.BackColor = System.Drawing.SystemColors.ControlDarkDark;
-            this.BackgroundImage = global::YearPredictor.Properties.Resources.background;
+            this.BackgroundImage = global::Osu20XXML.WindowsForm.Properties.Resources.background;
             this.ClientSize = new System.Drawing.Size(800, 450);
             this.ControlBox = false;
             this.Controls.Add(this.fileLoadingProgressBar);
