@@ -6,6 +6,9 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationIcon />
     <StartupObject />
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Osu20XXKeyFile.snk</AssemblyOriginatorKeyFile>
+    <AssemblyName>YearPredictor</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
