@@ -16,6 +16,8 @@ namespace YearPredictor
 {
     public partial class MainWindow : Form
     {
+        #region Variables
+
         //Window dragging stuff
         public const int WM_NCLBUTTONDOWN = 0xA1;
         public const int HT_CAPTION = 0x2;
@@ -25,14 +27,20 @@ namespace YearPredictor
         [DllImportAttribute("user32.dll")]
         public static extern bool ReleaseCapture();
 
-        //MapInfo storage
-        private List<MapPanel> maps= new List<MapPanel>();
+        //MapPanel storage
+        private List<MapPanel> maps = new List<MapPanel>();
 
+        #endregion
+
+
+        #region Windows Form Functions
+
+
+        #region Misc
         public MainWindow()
         {
             InitializeComponent();
         }
-
 
         private void Form1_Load(object sender, EventArgs e)
         {
@@ -52,6 +60,31 @@ namespace YearPredictor
                 SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
             }
         }
+
+        private void fileLoader_DoWork(object sender, DoWorkEventArgs e)
+        {
+            //Call LoadFiles func and wait :)
+            BackgroundWorker worker = sender as BackgroundWorker;
+
+            LoadFiles((string[])e.Argument, worker, e);
+        }
+
+        private void fileLoader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            //Update UI
+            UpdateMapList();
+            fileLoadingProgressBar.Visible = false;
+        }
+
+        private void fileLoader_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            fileLoadingProgressBar.Value = e.ProgressPercentage;
+        }
+
+        #endregion
+
+
+        #region Drop Panel
 
         private void DropPanel_DragEnter(object sender, DragEventArgs e)
         {
@@ -74,15 +107,6 @@ namespace YearPredictor
                 e.Effect = DragDropEffects.None;
             }
         }
-
-        private bool CheckFileTypes(string[] filePaths)
-        {
-            foreach (string path in filePaths)
-                if (!(path.EndsWith(".osz") || path.EndsWith(".osu")))
-                    return false;
-            return true;
-        }
-
         private void DropPanel_DragLeave(object sender, EventArgs e)
         {
             DropPanel.BackColor = Color.LightSlateGray;
@@ -105,118 +129,35 @@ namespace YearPredictor
             DropPanel_Click(sender, e);
         }
 
-        private void LoadFiles(string[] filePaths, BackgroundWorker worker, DoWorkEventArgs e)
+        private void DropPanel_DragDrop(object sender, DragEventArgs e)
         {
-            if (CheckFileTypes(filePaths))
+            if (CheckFileTypes(e.Data.GetData(DataFormats.FileDrop) as string[]))
             {
-                int count = 0;
-                worker.ReportProgress(0);
-                foreach (string path in filePaths)
-                {
-                    if (path.EndsWith(".osz"))
-                    {
-                        using (ZipArchive archive = ZipFile.OpenRead(path))
-                        {
-                            foreach (ZipArchiveEntry entry in archive.Entries)
-                            {
-                                if (entry.FullName.EndsWith(".osu", StringComparison.OrdinalIgnoreCase))
-                                {
-                                    MapInfo newMap = new MapInfo();
-                                    using (StreamReader sr = new StreamReader(entry.Open()))
-                                    {
-                                        string line;
-                                        // Read and display lines from the file until the end of
-                                        // the file is reached.
-                                        
-                                        while ((line = sr.ReadLine()) != null)
-                                        {
-                                            Regex titleRx = new Regex(@"(Title:)(.+)", RegexOptions.Compiled);
-                                            Match titleMatch = titleRx.Match(line);
-                                            if(titleMatch.Success)
-                                            {
-                                                newMap.MapName = titleMatch.Groups[2].Value;
-                                            }
-                                            Regex diffRx = new Regex(@"(Version:)(.+)", RegexOptions.Compiled);
-                                            Match diffMatch = diffRx.Match(line);
-                                            if (diffMatch.Success)
-                                            {
-                                                newMap.DiffName = diffMatch.Groups[2].Value;
-                                            }
-                                        }
-                                    }
-                                    maps.Add(new MapPanel(newMap, 0, this));
-                                }
-                            }
-                        }
-                    }
-                    else if (path.EndsWith(".osu"))
-                    {
-                        MapInfo newMap = new MapInfo();
-                        using (StreamReader sr = new StreamReader(File.Open(path, FileMode.Open)))
-                        {
-                            string line;
-                            // Read and display lines from the file until the end of
-                            // the file is reached.
-
-                            while ((line = sr.ReadLine()) != null)
-                            {
-                                Regex titleRx = new Regex(@"(Title:)(.+)", RegexOptions.Compiled);
-                                Match titleMatch = titleRx.Match(line);
-                                if (titleMatch.Success)
-                                {
-                                    newMap.MapName = titleMatch.Groups[2].Value;
-                                }
-                                Regex diffRx = new Regex(@"(Version:)(.+)", RegexOptions.Compiled);
-                                Match diffMatch = diffRx.Match(line);
-                                if (diffMatch.Success)
-                                {
-                                    newMap.DiffName = diffMatch.Groups[2].Value;
-                                }
-                            }
-                        }
-                        maps.Add(new MapPanel(newMap, 0, this));
-                    }
-                    count++;
-                    worker.ReportProgress((int)(((float)count / (float)filePaths.Length) * 100));
-                }
+                fileLoadingProgressBar.Visible = true;
+                fileLoadingProgressBar.Value = 0;
+                DropPanel.BackColor = Color.LightSlateGray;
+                fileLoader.RunWorkerAsync(e.Data.GetData(DataFormats.FileDrop) as string[]);
             }
         }
 
-        private void fileLoader_DoWork(object sender, DoWorkEventArgs e)
-        {
-            BackgroundWorker worker = sender as BackgroundWorker;
+        #endregion
 
-            LoadFiles((string[])e.Argument, worker, e);
+
+        #endregion
+
+
+        #region Utility Functions
+
+        //Returns whether or not every file path given is a .osu or .osz
+        private bool CheckFileTypes(string[] filePaths)
+        {
+            foreach (string path in filePaths)
+                if (!(path.EndsWith(".osz") || path.EndsWith(".osu")))
+                    return false;
+            return true;
         }
 
-        private void fileLoader_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            UpdateMapList();
-            fileLoadingProgressBar.Visible = false;
-        }
-
-        public void UpdateMapList()
-        {
-            MapPanel.VerticalScroll.Value = 0;
-            MapPanel.VerticalScroll.Maximum = maps.Count * 50;
-
-            if (maps.Count > 0)
-                MapsLabel.Visible = false;
-            else
-                MapsLabel.Visible = true;
-
-            maps.Sort((m1, m2) => m1.associatedMapInfo.MapName.CompareTo(m2.associatedMapInfo.MapName));
-            int count = 0;
-            foreach (MapPanel map in maps)
-            {
-                if(!MapPanel.Controls.Contains(map))
-                    MapPanel.Controls.Add(map);
-                map.move(count * 50, maps.Count*50 > MapPanel.Size.Height);
-                count++;
-            }
-            
-        }
-       
+        //Deletes the given map from the maps list and updates the UI
         public void DeleteMap(MapPanel map)
         {
             maps.Remove(map);
@@ -224,14 +165,153 @@ namespace YearPredictor
             UpdateMapList();
         }
 
-        private void fileLoader_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        //Function to load files from the given  filepaths with a BackgroundWorker
+        private void LoadFiles(string[] filePaths, BackgroundWorker worker, DoWorkEventArgs e)
         {
-            fileLoadingProgressBar.Value = e.ProgressPercentage;
+            //Check to make sure that the given file paths are .osu  and .osz
+            if (CheckFileTypes(filePaths))
+            {
+                //Starting load loop
+                int count = 0;
+                worker.ReportProgress(0);
+
+                foreach (string path in filePaths)
+                {
+                    //If the file is .osz, we treat it like a .zip
+                    if (path.EndsWith(".osz"))
+                    {
+                        //Unzip...
+                        using (ZipArchive archive = ZipFile.OpenRead(path))
+                        {
+                            //Go through each file in the archive
+                            foreach (ZipArchiveEntry entry in archive.Entries)
+                            {
+                                //Find the .osu files we need
+                                if (entry.FullName.EndsWith(".osu", StringComparison.OrdinalIgnoreCase))
+                                {
+                                    //Initializing a new MapInfo container and loading in the metadata from the .osu file
+                                    //Its faster to read the entire map into a string and run regex checks
+                                    MapInfo newMap = new MapInfo();
+                                    string fileText = File.ReadAllText(path);
+
+                                    Regex titleRx = new Regex(@"(Title:)(.+)", RegexOptions.Compiled);
+                                    Match titleMatch = titleRx.Match(fileText);
+                                    if (titleMatch.Success)
+                                    {
+                                        newMap.MapName = titleMatch.Groups[2].Value;
+                                    }
+
+                                    Regex diffRx = new Regex(@"(Version:)(.+)", RegexOptions.Compiled);
+                                    Match diffMatch = diffRx.Match(fileText);
+                                    if (diffMatch.Success)
+                                    {
+                                        if (diffMatch.Groups[2].Value == "")
+                                        {
+                                            newMap.DiffName = "N/A";
+                                        }
+                                        else
+                                        {
+                                            newMap.DiffName = diffMatch.Groups[2].Value;
+                                        }
+                                    }
+
+                                    //Create a new MapPanel and add it to our list of MapPanels
+                                    maps.Add(new MapPanel(newMap, 0, this));
+                                }
+                            }
+                        }
+                    }
+
+                    //If the given file is just a .osu file, we can just read it in
+                    else if (path.EndsWith(".osu"))
+                    {
+                        //Initializing a new MapInfo container and loading in the metadata from the .osu file
+                        //Its faster to read the entire map into a string and run regex checks
+                        MapInfo newMap = new MapInfo();
+                        string fileText = File.ReadAllText(path);
+
+                        Regex titleRx = new Regex(@"(Title:)(.+)", RegexOptions.Compiled);
+                        Match titleMatch = titleRx.Match(fileText);
+                        if (titleMatch.Success)
+                        {
+                            newMap.MapName = titleMatch.Groups[2].Value;
+                        }
+
+                        Regex diffRx = new Regex(@"(Version:)(.+)", RegexOptions.Compiled);
+                        Match diffMatch = diffRx.Match(fileText);
+                        if (diffMatch.Success)
+                        {
+                            if (diffMatch.Groups[2].Value == "")
+                            {
+                                newMap.DiffName = "N/A";
+                            }
+                            else
+                            {
+                                newMap.DiffName = diffMatch.Groups[2].Value;
+                            }
+                        }
+
+                        //Create a new MapPanel and add it to our list of MapPanels
+                        maps.Add(new MapPanel(newMap, 0, this));
+                    }
+                    count++;
+                    worker.ReportProgress((int)(((float)count / minimum((float)filePaths.Length, 100f)) * 100));
+                    if (count == 100)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        //Returns the smaller of the two arguments
+        private float minimum(float a, float b)
+        {
+            if (a < b)
+                return a;
+            return b;
+        }
+
+        //Updates the maps being displayed
+        public void UpdateMapList()
+        {
+            //Kicks you to the top of the list
+            //Not doing this results in weird behavior when deleting maps
+            MapPanel.VerticalScroll.Value = 0;
+            MapPanel.VerticalScroll.Maximum = maps.Count * 50;
+
+            //Check if we need to display the label saying that maps will appear here 
+            if (maps.Count > 0)
+                MapsLabel.Visible = false;
+            else
+                MapsLabel.Visible = true;
+
+            //Sort the maps into alphabetical order
+            maps.Sort((m1, m2) => m1.associatedMapInfo.MapName.CompareTo(m2.associatedMapInfo.MapName));
+
+            //Update the maps
+            int count = 0;
+            foreach (MapPanel map in maps)
+            {
+                if (!MapPanel.Controls.Contains(map))
+                    MapPanel.Controls.Add(map);
+                map.move(count * 50, maps.Count * 50 > MapPanel.Size.Height);
+                count++;
+            }
+
+        }
+
+
+        #endregion
+
+        private void toolStripContainer1_ContentPanel_Load(object sender, EventArgs e)
+        {
+
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            UpdateMapList();
+
         }
     }
 }

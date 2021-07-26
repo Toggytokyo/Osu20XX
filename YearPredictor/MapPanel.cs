@@ -25,6 +25,7 @@ namespace YearPredictor
             this.Location = new Point(0, position * 50);
             this.Size = new Size(384, 50);
             this.BackColor = Color.DarkGray;
+            this.BorderStyle = BorderStyle.FixedSingle;
 
             DeleteButton = new Button();
             DeleteButton.AutoSize = false;
@@ -35,12 +36,15 @@ namespace YearPredictor
             DeleteButton.Click += new System.EventHandler(this.Delete_Clicked);
 
             NameLabel = new Label();
+            NameLabel.BorderStyle = BorderStyle.FixedSingle;
+            NameLabel.AutoSize = false;
             NameLabel.Location = new Point(50, 0);
             NameLabel.Size = new Size(334,25);
             NameLabel.TextAlign = ContentAlignment.MiddleLeft;
             NameLabel.Text = associatedMapInfo.MapName;
 
             DiffLabel = new Label();
+            DiffLabel.AutoSize = false;
             DiffLabel.Location = new Point(50, 25);
             DiffLabel.Size = new Size(334, 25);
             DiffLabel.TextAlign = ContentAlignment.MiddleLeft;

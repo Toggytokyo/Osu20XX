@@ -29,14 +29,12 @@ namespace YearPredictor
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.ExitButton = new System.Windows.Forms.Button();
             this.ControlPanel = new System.Windows.Forms.Panel();
             this.MapPanel = new System.Windows.Forms.Panel();
             this.MapsLabel = new System.Windows.Forms.Label();
             this.DropPanel = new System.Windows.Forms.Panel();
             this.DropLabel = new System.Windows.Forms.Label();
-            this.imageList1 = new System.Windows.Forms.ImageList(this.components);
             this.YearLabel = new System.Windows.Forms.Label();
             this.fileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fileLoader = new System.ComponentModel.BackgroundWorker();
@@ -105,6 +103,7 @@ namespace YearPredictor
             this.DropPanel.Size = new System.Drawing.Size(384, 243);
             this.DropPanel.TabIndex = 5;
             this.DropPanel.Click += new System.EventHandler(this.DropPanel_Click);
+            this.DropPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.DropPanel_DragDrop);
             this.DropPanel.DragEnter += new System.Windows.Forms.DragEventHandler(this.DropPanel_DragEnter);
             this.DropPanel.DragLeave += new System.EventHandler(this.DropPanel_DragLeave);
             // 
@@ -118,12 +117,6 @@ namespace YearPredictor
             this.DropLabel.Text = "Drop .osz or .osu files here or click to choose files";
             this.DropLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.DropLabel.Click += new System.EventHandler(this.DropLabel_Click);
-            // 
-            // imageList1
-            // 
-            this.imageList1.ColorDepth = System.Windows.Forms.ColorDepth.Depth8Bit;
-            this.imageList1.ImageSize = new System.Drawing.Size(16, 16);
-            this.imageList1.TransparentColor = System.Drawing.Color.Transparent;
             // 
             // YearLabel
             // 
@@ -194,7 +187,6 @@ namespace YearPredictor
         private System.Windows.Forms.Panel MapPanel;
         private System.Windows.Forms.Panel DropPanel;
         private System.Windows.Forms.Label DropLabel;
-        private System.Windows.Forms.ImageList imageList1;
         private System.Windows.Forms.Label YearLabel;
         private System.Windows.Forms.Label MapsLabel;
         private System.Windows.Forms.OpenFileDialog fileDialog;
