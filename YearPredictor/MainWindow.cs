@@ -277,7 +277,6 @@ namespace Osu20XXML.WindowsForm
                         newMap.StddevDeltaTime = (float)Math.Sqrt(deltaTimes.Average(v => Math.Pow(v - newMap.AvgDeltaTime, 2)));
                         float diffAverage = Enumerable.Average(diffs);
                         newMap.DiffVariance = (float)Math.Sqrt(diffs.Average(v => Math.Pow(v - diffAverage, 2))) / diffAverage;
-                        Console.WriteLine(Enumerable.Average(deltaTimes).ToString() + " " + ((float)Math.Sqrt(deltaTimes.Average(v => Math.Pow(v - newMap.AvgDeltaTime, 2)))).ToString() + " " + ((float)Math.Sqrt(diffs.Average(v => Math.Pow(v - diffAverage, 2))) / diffAverage).ToString());
                         Regex rx;
                         Match rxMatch;
 
