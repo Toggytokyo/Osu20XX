@@ -10,6 +10,8 @@ namespace Osu20XXML.WindowsForm
     {
         private string mapName;
         private string diffName;
+        private string artistName;
+        private string creatorName;
         private float hp;
         private float cs;
         private float od;
@@ -22,6 +24,8 @@ namespace Osu20XXML.WindowsForm
         {
             MapName = "N/A";
             DiffName = "N/A";
+            ArtistName = "N/A";
+            CreatorName = "N/A";
             Hp = 0;
             Cs = 0;
             Od = 0;
@@ -31,10 +35,12 @@ namespace Osu20XXML.WindowsForm
             DiffVariance = 0;
         }
 
-        public MapInfo(string mapName, string diffName, float hp, float cs, float od, float ar, float avgDeltaTime, float stddevDeltaTime, float diffVariance)
+        public MapInfo(string mapName, string diffName, string artistName, string creatorName, float hp, float cs, float od, float ar, float avgDeltaTime, float stddevDeltaTime, float diffVariance)
         {
             MapName = mapName;
             DiffName = diffName;
+            ArtistName = artistName;
+            CreatorName = creatorName;
             Hp = hp;
             Cs = cs;
             Od = od;
@@ -53,6 +59,8 @@ namespace Osu20XXML.WindowsForm
         public float AvgDeltaTime { get => avgDeltaTime; set => avgDeltaTime = value; }
         public float StddevDeltaTime { get => stddevDeltaTime; set => stddevDeltaTime = value; }
         public float DiffVariance { get => diffVariance; set => diffVariance = value; }
+        public string ArtistName { get => artistName; set => artistName = value; }
+        public string CreatorName { get => creatorName; set => creatorName = value; }
 
         public ModelInput ConvertToModelInput()
         {

@@ -29,8 +29,11 @@ namespace Osu20XXML.WindowsForm
         public static extern bool ReleaseCapture();
 
         //MapPanel storage
-        private List<MapPanel> maps = new List<MapPanel>();
-
+        readonly int MAPS_PER_PAGE = 6; 
+        private int currentPage = 0;
+        private List<MapPanel> displayedMaps = new List<MapPanel>();
+        private List<MapInfo> allMaps = new List<MapInfo>();
+        string[] searchTerms = { "" };
         #endregion
 
 
@@ -81,6 +84,57 @@ namespace Osu20XXML.WindowsForm
         {
             fileLoadingProgressBar.Value = e.ProgressPercentage;
         }
+
+        private void rightPageButton_Click(object sender, EventArgs e)
+        {
+            if (currentPage < (int)Math.Ceiling((float)allMaps.Count / MAPS_PER_PAGE) - 1)
+            {
+                currentPage++;
+                UpdateMapList();
+            }
+        }
+
+        private void leftPageButton_Click(object sender, EventArgs e)
+        {
+            if (currentPage > 0)
+            {
+                currentPage--;
+                UpdateMapList();
+            }
+        }
+
+        private void clearButton_Click(object sender, EventArgs e)
+        {
+            allMaps.Clear();
+            UpdateMapList();
+        }
+
+        private void pageLabel_TextChanged(object sender, EventArgs e)
+        {
+            if (pageLabel.Enabled == false)
+                return;
+
+            int input;
+            if (int.TryParse(pageLabel.Text, out input))
+            {
+                if (input > 0 && input <= (int)Math.Ceiling((float)allMaps.Count / MAPS_PER_PAGE))
+                {
+                    currentPage = input - 1;
+                    UpdateMapList();
+                    return;
+                }
+            }
+
+            currentPage = 0;
+            UpdateMapList();
+        }
+
+        private void searchBox_TextChanged(object sender, EventArgs e)
+        {
+            searchTerms = searchBox.Text.Split(' ');
+            UpdateMapList();
+        }
+
 
         #endregion
 
@@ -161,8 +215,7 @@ namespace Osu20XXML.WindowsForm
         //Deletes the given map from the maps list and updates the UI
         public void DeleteMap(MapPanel map)
         {
-            maps.Remove(map);
-            map.Dispose();
+            allMaps.Remove(map.associatedMapInfo);
             UpdateMapList();
         }
 
@@ -170,6 +223,19 @@ namespace Osu20XXML.WindowsForm
         {
             var predictedYear = ConsumeModel.Predict(mapInfo.ConvertToModelInput());
             YearLabel.Text = predictedYear.Prediction;
+        }
+
+        private bool FindMaps(MapInfo map)
+        {
+            foreach(string term in searchTerms)
+            {
+                if (!(map.MapName.ToLower().Contains(term.ToLower())
+                    || map.DiffName.ToLower().Contains(term.ToLower())
+                    || map.ArtistName.ToLower().Contains(term.ToLower())
+                    || map.CreatorName.ToLower().Contains(term.ToLower())))
+                    return false;
+            }
+            return true;
         }
 
         //Function to load files from the given  filepaths with a BackgroundWorker
@@ -208,11 +274,7 @@ namespace Osu20XXML.WindowsForm
                         ReadOsuFile(File.OpenText(path));
                     }
                     count++;
-                    worker.ReportProgress((int)(((float)count / Minimum((float)filePaths.Length, 100f)) * 100));
-                    if (count == 100)
-                    {
-                        break;
-                    }
+                    worker.ReportProgress((int)(((float)count /(float)filePaths.Length) * 100));
                 }
             }
         }
@@ -279,22 +341,32 @@ namespace Osu20XXML.WindowsForm
 
             //Perform regex matches on fileText
 
-            rx = new Regex(@"(Title:)(\w+)", RegexOptions.Compiled);
+            rx = new Regex(@"(Title:)(.+)", RegexOptions.Compiled);
             rxMatch = rx.Match(fileText);
             if (rxMatch.Success)
             {
                 newMap.MapName = rxMatch.Groups[2].Value;
             }
 
-            rx = new Regex(@"(Version:)(\w+)", RegexOptions.Compiled);
+            rx = new Regex(@"(Version:)(.+)", RegexOptions.Compiled);
             rxMatch = rx.Match(fileText);
             if (rxMatch.Success)
             {
                 newMap.DiffName = rxMatch.Groups[2].Value;
             }
-            else
+
+            rx = new Regex(@"(Artist:)(.+)", RegexOptions.Compiled);
+            rxMatch = rx.Match(fileText);
+            if (rxMatch.Success)
             {
-                newMap.DiffName = "N/A";
+                newMap.ArtistName = rxMatch.Groups[2].Value;
+            }
+
+            rx = new Regex(@"(Creator:)(.+)", RegexOptions.Compiled);
+            rxMatch = rx.Match(fileText);
+            if (rxMatch.Success)
+            {
+                newMap.CreatorName = rxMatch.Groups[2].Value;
             }
 
             rx = new Regex(@"(HPDrainRate:)(\d*.?\d*)", RegexOptions.Compiled);
@@ -330,40 +402,69 @@ namespace Osu20XXML.WindowsForm
             }
 
             //Create a new MapPanel and add it to our list of MapPanels
-            maps.Add(new MapPanel(newMap, 0, this));
+            allMaps.Add(newMap);
         }
 
         //Updates the maps being displayed
         public void UpdateMapList()
         {
-            //Kicks you to the top of the list
-            //Not doing this results in weird behavior when deleting maps
-            MapPanel.VerticalScroll.Value = 0;
-            MapPanel.VerticalScroll.Maximum = maps.Count * 50;
+            List<MapInfo> filteredMaps = new List<MapInfo>();
+            filteredMaps = allMaps.FindAll(FindMaps);
+
+            if (currentPage * MAPS_PER_PAGE >= filteredMaps.Count && currentPage > 0)
+                currentPage--;
 
             //Check if we need to display the label saying that maps will appear here 
-            if (maps.Count > 0)
+            if (allMaps.Count > 0) {
+                pageLabel.Text = (currentPage + 1).ToString();
                 MapsLabel.Visible = false;
+                if (filteredMaps.Count > 0)
+                {
+                    pageLabel.Enabled = true;
+                    pageLabel.Text = (currentPage + 1).ToString();
+                    noResultsLabel.Visible = false;
+                }
+                else
+                {
+                    pageLabel.Enabled = false;
+                    pageLabel.Text = "0";
+                    noResultsLabel.Visible = true;
+                }
+            }               
             else
-                MapsLabel.Visible = true;
-
-            //Sort the maps into alphabetical order
-            maps.Sort((m1, m2) => m1.associatedMapInfo.MapName.CompareTo(m2.associatedMapInfo.MapName));
-
-            //Update the maps
-            int count = 0;
-            foreach (MapPanel map in maps)
             {
-                if (!MapPanel.Controls.Contains(map))
-                    MapPanel.Controls.Add(map);
-                map.move(count * 50, maps.Count * 50 > MapPanel.Size.Height);
-                count++;
+                pageLabel.Enabled = false;
+                noResultsLabel.Visible = false;
+                MapsLabel.Visible = true;
+                pageLabel.Text = "0";
+            }
+
+            
+            //Sort the maps into alphabetical order
+            filteredMaps.Sort((m1, m2) => m1.MapName.CompareTo(m2.MapName));
+
+
+            foreach(MapPanel map in displayedMaps)
+            {
+                map.Dispose();
+            }
+            displayedMaps.Clear();
+
+            
+            if (allMaps.Count > 0)
+            {
+                int count = 0;
+                foreach (MapInfo map in filteredMaps.GetRange(currentPage * MAPS_PER_PAGE, (int)Minimum((filteredMaps.Count - currentPage * MAPS_PER_PAGE), MAPS_PER_PAGE)))
+                {
+                    MapPanel newDisplayedMap = new MapPanel(map, count, this);
+                    displayedMaps.Add(newDisplayedMap);
+                    MapPanel.Controls.Add(newDisplayedMap);
+                    count++;
+                }
             }
 
         }
 
-
         #endregion
-
     }
 }

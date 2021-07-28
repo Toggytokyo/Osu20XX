@@ -58,20 +58,8 @@ namespace Osu20XXML.WindowsForm
             this.Controls.Add(DiffLabel);
         }
 
-        public void move(int newY, bool resize)
+        public void move(int newY)
         {
-            if(resize)
-            {
-                this.Size = new Size(367, 50);
-                NameLabel.Size = new Size(313, 25);
-                DiffLabel.Size = new Size(313, 25);
-            }
-            else
-            {
-                this.Size = new Size(384, 50);
-                NameLabel.Size = new Size(334, 25);
-                DiffLabel.Size = new Size(313, 25);
-            }
             this.Location = new Point(0, newY);
         }
 
