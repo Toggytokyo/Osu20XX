@@ -196,35 +196,7 @@ namespace Osu20XXML.WindowsForm
                                 //Find the .osu files we need
                                 if (entry.FullName.EndsWith(".osu", StringComparison.OrdinalIgnoreCase))
                                 {
-                                    //Initializing a new MapInfo container and loading in the metadata from the .osu file
-                                    //Its faster to read the entire map into a string and run regex checks
-                                    MapInfo newMap = new MapInfo();
-                                    string fileText = File.ReadAllText(path);
-
-                                    Regex titleRx = new Regex(@"(Title:)(.+)", RegexOptions.Compiled);
-                                    Match titleMatch = titleRx.Match(fileText);
-                                    if (titleMatch.Success)
-                                    {
-                                        newMap.MapName = titleMatch.Groups[2].Value;
-                                    }
-
-                                    Regex diffRx = new Regex(@"(Version:)(.+)", RegexOptions.Compiled);
-                                    Match diffMatch = diffRx.Match(fileText);
-                                    if (diffMatch.Success)
-                                    {
-                                        if (diffMatch.Groups[2].Value == "")
-                                        {
-                                            newMap.DiffName = "N/A";
-                                        }
-                                        else
-                                        {
-                                            Console.WriteLine("Diff: '" + diffMatch.Groups[2].Value + "'");
-                                            newMap.DiffName = diffMatch.Groups[2].Value;
-                                        }
-                                    }
-
-                                    //Create a new MapPanel and add it to our list of MapPanels
-                                    maps.Add(new MapPanel(newMap, 0, this));
+                                    ReadOsuFile(new StreamReader(entry.Open()));
                                 }
                             }
                         }
@@ -233,108 +205,10 @@ namespace Osu20XXML.WindowsForm
                     //If the given file is just a .osu file, we can just read it in
                     else if (path.EndsWith(".osu"))
                     {
-                        //Initializing a new MapInfo container and loading in the metadata from the .osu file
-                        //Its faster to read the entire map into a string and run regex checks
-                        MapInfo newMap = new MapInfo();
-                        string fileText = "";
-                        List<float> deltaTimes = new List<float>();
-                        List<float> diffs = new List<float>();
-                        using (StreamReader sr = File.OpenText(path))
-                        {
-                            string line = null;
-                            while (!(line = sr.ReadLine()).Contains("[HitObjects]"))
-                            {
-                                fileText += line + "\n";
-                            }
-
-                            float last_x = float.MinValue;
-                            float last_y = float.MinValue;
-                            float last_time = float.MinValue;
-                            Regex hitRx = new Regex(@"(-?\d+\.?\d*),(-?\d+\.?\d*),(-?\d+\.?\d*)", RegexOptions.Compiled); ;
-                            Match hitRxMatch;
-                            while ((line = sr.ReadLine()) != null) {
-                                hitRxMatch = hitRx.Match(line);
-                                if(hitRxMatch.Success)
-                                {
-                                    float x = float.Parse(hitRxMatch.Groups[1].Value);
-                                    float y = float.Parse(hitRxMatch.Groups[2].Value);
-                                    float time = float.Parse(hitRxMatch.Groups[3].Value);
-                                    if(last_x != float.MinValue && last_y != float.MinValue && last_time != float.MinValue)
-                                    {
-                                        float distance = (float)Math.Sqrt(Math.Pow(x - last_x, 2) + Math.Pow(y-last_y, 2));
-                                        float deltaTime = time - last_time;
-                                        if (deltaTime != 0)
-                                            diffs.Add(distance / deltaTime);
-                                        deltaTimes.Add(deltaTime);
-                                    }
-                                    last_x = x;
-                                    last_y = y;
-                                    last_time = time;
-                                }
-                            }
-                        }
-                        newMap.AvgDeltaTime = Enumerable.Average(deltaTimes);
-                        newMap.StddevDeltaTime = (float)Math.Sqrt(deltaTimes.Average(v => Math.Pow(v - newMap.AvgDeltaTime, 2)));
-                        float diffAverage = Enumerable.Average(diffs);
-                        newMap.DiffVariance = (float)Math.Sqrt(diffs.Average(v => Math.Pow(v - diffAverage, 2))) / diffAverage;
-                        Regex rx;
-                        Match rxMatch;
-
-                        rx = new Regex(@"(Title:)(\w+)", RegexOptions.Compiled);
-                        rxMatch = rx.Match(fileText);
-                        if (rxMatch.Success)
-                        {
-                            newMap.MapName = rxMatch.Groups[2].Value;
-                        }
-
-                        rx = new Regex(@"(Version:)(\w+)", RegexOptions.Compiled);
-                        rxMatch = rx.Match(fileText);
-                        if (rxMatch.Success)
-                        {
-                              newMap.DiffName = rxMatch.Groups[2].Value;
-                        }
-                        else
-                        {
-                            newMap.DiffName = "N/A";
-                        }
-
-                        rx = new Regex(@"(HPDrainRate:)(\d*.?\d*)", RegexOptions.Compiled);
-                        rxMatch = rx.Match(fileText);
-                        if (rxMatch.Success)
-                        {
-                            newMap.Hp = float.Parse(rxMatch.Groups[2].Value);
-                        }
-
-                        rx = new Regex(@"(CircleSize:)(\d*.?\d*)", RegexOptions.Compiled);
-                        rxMatch = rx.Match(fileText);
-                        if (rxMatch.Success)
-                        {
-                            newMap.Cs = float.Parse(rxMatch.Groups[2].Value);
-                        }
-
-                        rx = new Regex(@"(OverallDifficulty:)(\d*.?\d*)", RegexOptions.Compiled);
-                        rxMatch = rx.Match(fileText);
-                        if (rxMatch.Success)
-                        {
-                            newMap.Od = float.Parse(rxMatch.Groups[2].Value);
-                        }
-
-                        rx = new Regex(@"(ApproachRate:)(\d*.?\d*)", RegexOptions.Compiled);
-                        rxMatch = rx.Match(fileText);
-                        if (rxMatch.Success)
-                        {
-                            newMap.Ar = float.Parse(rxMatch.Groups[2].Value);
-                        } 
-                        else
-                        {
-                            newMap.Ar = newMap.Od;
-                        }
-
-                        //Create a new MapPanel and add it to our list of MapPanels
-                        maps.Add(new MapPanel(newMap, 0, this));
+                        ReadOsuFile(File.OpenText(path));
                     }
                     count++;
-                    worker.ReportProgress((int)(((float)count / minimum((float)filePaths.Length, 100f)) * 100));
+                    worker.ReportProgress((int)(((float)count / Minimum((float)filePaths.Length, 100f)) * 100));
                     if (count == 100)
                     {
                         break;
@@ -344,11 +218,119 @@ namespace Osu20XXML.WindowsForm
         }
 
         //Returns the smaller of the two arguments
-        private float minimum(float a, float b)
+        private float Minimum(float a, float b)
         {
             if (a < b)
                 return a;
             return b;
+        }
+
+        //Reads a .osu file stream and adds its representation to the MapPanel list
+        private void ReadOsuFile(StreamReader sr)
+        {
+            //Initializing a new MapInfo container and loading in the metadata from the .osu file
+            //Its faster to read the entire map into a string and run regex checks
+            MapInfo newMap = new MapInfo();
+            string fileText = "";
+            List<float> deltaTimes = new List<float>();
+            List<float> diffs = new List<float>();
+  
+            //Read metadata into fileText string
+            string line = null;
+            while (!(line = sr.ReadLine()).Contains("[HitObjects]"))
+            {
+                fileText += line + "\n";
+            }
+
+            //Read the hitobjects and generate related data points
+            float last_x = float.MinValue;
+            float last_y = float.MinValue;
+            float last_time = float.MinValue;
+            Regex hitRx = new Regex(@"(-?\d+\.?\d*),(-?\d+\.?\d*),(-?\d+\.?\d*)", RegexOptions.Compiled); ;
+            Match hitRxMatch;
+            while ((line = sr.ReadLine()) != null)
+            {
+                hitRxMatch = hitRx.Match(line);
+                if (hitRxMatch.Success)
+                {
+                    float x = float.Parse(hitRxMatch.Groups[1].Value);
+                    float y = float.Parse(hitRxMatch.Groups[2].Value);
+                    float time = float.Parse(hitRxMatch.Groups[3].Value);
+                    if (last_x != float.MinValue && last_y != float.MinValue && last_time != float.MinValue)
+                    {
+                        float distance = (float)Math.Sqrt(Math.Pow(x - last_x, 2) + Math.Pow(y - last_y, 2));
+                        float deltaTime = time - last_time;
+                        if (deltaTime != 0)
+                            diffs.Add(distance / deltaTime);
+                        deltaTimes.Add(deltaTime);
+                    }
+                    last_x = x;
+                    last_y = y;
+                    last_time = time;
+                }
+            }
+            
+            newMap.AvgDeltaTime = Enumerable.Average(deltaTimes);
+            newMap.StddevDeltaTime = (float)Math.Sqrt(deltaTimes.Average(v => Math.Pow(v - newMap.AvgDeltaTime, 2)));
+            float diffAverage = Enumerable.Average(diffs);
+            newMap.DiffVariance = (float)Math.Sqrt(diffs.Average(v => Math.Pow(v - diffAverage, 2))) / diffAverage;
+            Regex rx;
+            Match rxMatch;
+
+            //Perform regex matches on fileText
+
+            rx = new Regex(@"(Title:)(\w+)", RegexOptions.Compiled);
+            rxMatch = rx.Match(fileText);
+            if (rxMatch.Success)
+            {
+                newMap.MapName = rxMatch.Groups[2].Value;
+            }
+
+            rx = new Regex(@"(Version:)(\w+)", RegexOptions.Compiled);
+            rxMatch = rx.Match(fileText);
+            if (rxMatch.Success)
+            {
+                newMap.DiffName = rxMatch.Groups[2].Value;
+            }
+            else
+            {
+                newMap.DiffName = "N/A";
+            }
+
+            rx = new Regex(@"(HPDrainRate:)(\d*.?\d*)", RegexOptions.Compiled);
+            rxMatch = rx.Match(fileText);
+            if (rxMatch.Success)
+            {
+                newMap.Hp = float.Parse(rxMatch.Groups[2].Value);
+            }
+
+            rx = new Regex(@"(CircleSize:)(\d*.?\d*)", RegexOptions.Compiled);
+            rxMatch = rx.Match(fileText);
+            if (rxMatch.Success)
+            {
+                newMap.Cs = float.Parse(rxMatch.Groups[2].Value);
+            }
+
+            rx = new Regex(@"(OverallDifficulty:)(\d*.?\d*)", RegexOptions.Compiled);
+            rxMatch = rx.Match(fileText);
+            if (rxMatch.Success)
+            {
+                newMap.Od = float.Parse(rxMatch.Groups[2].Value);
+            }
+
+            rx = new Regex(@"(ApproachRate:)(\d*.?\d*)", RegexOptions.Compiled);
+            rxMatch = rx.Match(fileText);
+            if (rxMatch.Success)
+            {
+                newMap.Ar = float.Parse(rxMatch.Groups[2].Value);
+            }
+            else
+            {
+                newMap.Ar = newMap.Od;
+            }
+
+            //Create a new MapPanel and add it to our list of MapPanels
+            maps.Add(new MapPanel(newMap, 0, this));
         }
 
         //Updates the maps being displayed
