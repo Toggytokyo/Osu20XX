@@ -19,15 +19,6 @@ namespace Osu20XXML.WindowsForm
     {
         #region Variables
 
-        //Window dragging stuff
-        public const int WM_NCLBUTTONDOWN = 0xA1;
-        public const int HT_CAPTION = 0x2;
-
-        [DllImportAttribute("user32.dll")]
-        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
-        [DllImportAttribute("user32.dll")]
-        public static extern bool ReleaseCapture();
-
         //MapPanel storage
         readonly int MAPS_PER_PAGE = 6; 
         private int currentPage = 0;
@@ -49,20 +40,6 @@ namespace Osu20XXML.WindowsForm
         private void Form1_Load(object sender, EventArgs e)
         {
 
-        }
-
-        private void ExitButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        private void ControlBar_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                ReleaseCapture();
-                SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
-            }
         }
 
         private void fileLoader_DoWork(object sender, DoWorkEventArgs e)
@@ -457,5 +434,10 @@ namespace Osu20XXML.WindowsForm
         }
 
         #endregion
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -24,7 +24,7 @@ namespace Osu20XXML.WindowsForm
 
             this.Name = mapInfo.MapName + "_" + mapInfo.DiffName + "_panel";
             this.Location = new Point(0, position * 50);
-            this.Size = new Size(384, 50);
+            this.Size = new Size(382, 50);
             this.BackColor = Color.DarkGray;
             this.BorderStyle = BorderStyle.FixedSingle;
             this.Click += new System.EventHandler(this.Map_Clicked);
@@ -40,7 +40,7 @@ namespace Osu20XXML.WindowsForm
             NameLabel = new Label();
             NameLabel.AutoSize = false;
             NameLabel.Location = new Point(50, 0);
-            NameLabel.Size = new Size(334,25);
+            NameLabel.Size = new Size(332,25);
             NameLabel.TextAlign = ContentAlignment.MiddleLeft;
             NameLabel.Text = associatedMapInfo.MapName;
             NameLabel.Click += new System.EventHandler(this.Map_Clicked);
@@ -48,7 +48,7 @@ namespace Osu20XXML.WindowsForm
             DiffLabel = new Label();
             DiffLabel.AutoSize = false;
             DiffLabel.Location = new Point(50, 25);
-            DiffLabel.Size = new Size(334, 25);
+            DiffLabel.Size = new Size(332, 25);
             DiffLabel.TextAlign = ContentAlignment.MiddleLeft;
             DiffLabel.Text = associatedMapInfo.DiffName;
             DiffLabel.Click += new System.EventHandler(this.Map_Clicked);
