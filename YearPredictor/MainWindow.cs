@@ -308,11 +308,11 @@ namespace Osu20XXML.WindowsForm
             float last_x = float.MinValue;
             float last_y = float.MinValue;
             float last_time = float.MinValue;
-            Regex hitRx = new Regex(@"(-?\d+\.?\d*),(-?\d+\.?\d*),(-?\d+\.?\d*)", RegexOptions.Compiled); ;
+
             Match hitRxMatch;
             while ((line = sr.ReadLine()) != null)
             {
-                hitRxMatch = hitRx.Match(line);
+                hitRxMatch = Regex.Match(line, @"(-?\d+\.?\d*),(-?\d+\.?\d*),(-?\d+\.?\d*)");
                 if (hitRxMatch.Success)
                 {
                     float x = float.Parse(hitRxMatch.Groups[1].Value);
@@ -336,62 +336,53 @@ namespace Osu20XXML.WindowsForm
             newMap.StddevDeltaTime = (float)Math.Sqrt(deltaTimes.Average(v => Math.Pow(v - newMap.AvgDeltaTime, 2)));
             float diffAverage = Enumerable.Average(diffs);
             newMap.DiffVariance = (float)Math.Sqrt(diffs.Average(v => Math.Pow(v - diffAverage, 2))) / diffAverage;
-            Regex rx;
             Match rxMatch;
 
             //Perform regex matches on fileText
 
-            rx = new Regex(@"(Title:)(.+)", RegexOptions.Compiled);
-            rxMatch = rx.Match(fileText);
+            rxMatch = Regex.Match(fileText, @"(Title:)(.+)");
             if (rxMatch.Success)
             {
                 newMap.MapName = rxMatch.Groups[2].Value;
             }
 
-            rx = new Regex(@"(Version:)(.+)", RegexOptions.Compiled);
-            rxMatch = rx.Match(fileText);
+            rxMatch = Regex.Match(fileText, @"(Version:)(.+)");
             if (rxMatch.Success)
             {
                 newMap.DiffName = rxMatch.Groups[2].Value;
             }
 
-            rx = new Regex(@"(Artist:)(.+)", RegexOptions.Compiled);
-            rxMatch = rx.Match(fileText);
+            rxMatch = Regex.Match(fileText, @"(Artist:)(.+)");
             if (rxMatch.Success)
             {
                 newMap.ArtistName = rxMatch.Groups[2].Value;
             }
 
-            rx = new Regex(@"(Creator:)(.+)", RegexOptions.Compiled);
-            rxMatch = rx.Match(fileText);
+            rxMatch = Regex.Match(fileText, @"(Creator:)(.+)");
             if (rxMatch.Success)
             {
                 newMap.CreatorName = rxMatch.Groups[2].Value;
             }
 
-            rx = new Regex(@"(HPDrainRate:)(\d*.?\d*)", RegexOptions.Compiled);
-            rxMatch = rx.Match(fileText);
+            rxMatch = Regex.Match(fileText, @"(HPDrainRate:)(\d*.?\d*)");
             if (rxMatch.Success)
             {
                 newMap.Hp = float.Parse(rxMatch.Groups[2].Value);
             }
 
-            rx = new Regex(@"(CircleSize:)(\d*.?\d*)", RegexOptions.Compiled);
-            rxMatch = rx.Match(fileText);
+            rxMatch = Regex.Match(fileText, @"(CircleSize:)(\d*.?\d*)");
             if (rxMatch.Success)
             {
                 newMap.Cs = float.Parse(rxMatch.Groups[2].Value);
             }
 
-            rx = new Regex(@"(OverallDifficulty:)(\d*.?\d*)", RegexOptions.Compiled);
-            rxMatch = rx.Match(fileText);
+            rxMatch = Regex.Match(fileText, @"(OverallDifficulty:)(\d*.?\d*)");
             if (rxMatch.Success)
             {
                 newMap.Od = float.Parse(rxMatch.Groups[2].Value);
             }
 
-            rx = new Regex(@"(ApproachRate:)(\d*.?\d*)", RegexOptions.Compiled);
-            rxMatch = rx.Match(fileText);
+            rxMatch = Regex.Match(fileText, @"(ApproachRate:)(\d*.?\d*)");
             if (rxMatch.Success)
             {
                 newMap.Ar = float.Parse(rxMatch.Groups[2].Value);
