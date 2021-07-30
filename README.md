@@ -3,5 +3,6 @@ Osu20XX is a small program that uses machine learning to tell you what year's ma
 
 I plan on adding more functionality to this into the future, including:
 * General mapping style detection (pp, tech, etc)
-* Map reccomendations
+* Map recommendations
+* Customizable ML Model
 * More
