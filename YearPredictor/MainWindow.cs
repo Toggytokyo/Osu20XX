@@ -25,6 +25,7 @@ namespace Osu20XXML.WindowsForm
         private List<MapPanel> displayedMaps = new List<MapPanel>();
         private List<MapInfo> allMaps = new List<MapInfo>();
         string[] searchTerms = { "" };
+
         #endregion
 
 
@@ -88,11 +89,11 @@ namespace Osu20XXML.WindowsForm
 
         private void pageLabel_TextChanged(object sender, EventArgs e)
         {
-            if (pageLabel.Enabled == false)
+            if (PageLabel.Enabled == false)
                 return;
 
             int input;
-            if (int.TryParse(pageLabel.Text, out input))
+            if (int.TryParse(PageLabel.Text.Split('/')[0], out input))
             {
                 if (input > 0 && input <= (int)Math.Ceiling((float)allMaps.Count / MAPS_PER_PAGE))
                 {
@@ -108,7 +109,7 @@ namespace Osu20XXML.WindowsForm
 
         private void searchBox_TextChanged(object sender, EventArgs e)
         {
-            searchTerms = searchBox.Text.Split(' ');
+            searchTerms = SearchBox.Text.Split(' ');
             UpdateMapList();
         }
 
@@ -384,27 +385,27 @@ namespace Osu20XXML.WindowsForm
 
             //Check if we need to display the label saying that maps will appear here 
             if (allMaps.Count > 0) {
-                pageLabel.Text = (currentPage + 1).ToString();
+                PageLabel.Text = (currentPage + 1).ToString() + "/" + ((int)Math.Ceiling((float)filteredMaps.Count / MAPS_PER_PAGE)).ToString();
                 MapsLabel.Visible = false;
                 if (filteredMaps.Count > 0)
                 {
-                    pageLabel.Enabled = true;
-                    pageLabel.Text = (currentPage + 1).ToString();
+                    PageLabel.Enabled = true;
+                    PageLabel.Text = (currentPage + 1).ToString() + "/" + ((int)Math.Ceiling((float)filteredMaps.Count / MAPS_PER_PAGE)).ToString();
                     noResultsLabel.Visible = false;
                 }
                 else
                 {
-                    pageLabel.Enabled = false;
-                    pageLabel.Text = "0";
+                    PageLabel.Enabled = false;
+                    PageLabel.Text = "0/0";
                     noResultsLabel.Visible = true;
                 }
             }               
             else
             {
-                pageLabel.Enabled = false;
+                PageLabel.Enabled = false;
                 noResultsLabel.Visible = false;
                 MapsLabel.Visible = true;
-                pageLabel.Text = "0";
+                PageLabel.Text = "0/0";
             }
 
             
@@ -435,9 +436,5 @@ namespace Osu20XXML.WindowsForm
 
         #endregion
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
     }
 }

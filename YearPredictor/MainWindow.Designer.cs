@@ -39,12 +39,13 @@ namespace Osu20XXML.WindowsForm
             this.YearLabel = new System.Windows.Forms.Label();
             this.fileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fileLoader = new System.ComponentModel.BackgroundWorker();
-            this.clearButton = new System.Windows.Forms.Button();
-            this.leftPageButton = new System.Windows.Forms.Button();
-            this.rightPageButton = new System.Windows.Forms.Button();
-            this.pageLabel = new System.Windows.Forms.TextBox();
-            this.searchBox = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.ClearButton = new System.Windows.Forms.Button();
+            this.LeftPageButton = new System.Windows.Forms.Button();
+            this.RightPageButton = new System.Windows.Forms.Button();
+            this.PageLabel = new System.Windows.Forms.TextBox();
+            this.SearchBox = new System.Windows.Forms.TextBox();
+            this.MappingStyleLabel = new System.Windows.Forms.Label();
+            this.LoadOsuFolderButton = new System.Windows.Forms.Button();
             this.MapPanel.SuspendLayout();
             this.DropPanel.SuspendLayout();
             this.SuspendLayout();
@@ -89,9 +90,9 @@ namespace Osu20XXML.WindowsForm
             // fileLoadingProgressBar
             // 
             this.fileLoadingProgressBar.Cursor = System.Windows.Forms.Cursors.Default;
-            this.fileLoadingProgressBar.Location = new System.Drawing.Point(0, 288);
+            this.fileLoadingProgressBar.Location = new System.Drawing.Point(-2, 387);
             this.fileLoadingProgressBar.Name = "fileLoadingProgressBar";
-            this.fileLoadingProgressBar.Size = new System.Drawing.Size(385, 13);
+            this.fileLoadingProgressBar.Size = new System.Drawing.Size(385, 19);
             this.fileLoadingProgressBar.TabIndex = 7;
             this.fileLoadingProgressBar.Visible = false;
             // 
@@ -104,7 +105,7 @@ namespace Osu20XXML.WindowsForm
             this.DropPanel.Controls.Add(this.fileLoadingProgressBar);
             this.DropPanel.Location = new System.Drawing.Point(12, 12);
             this.DropPanel.Name = "DropPanel";
-            this.DropPanel.Size = new System.Drawing.Size(384, 302);
+            this.DropPanel.Size = new System.Drawing.Size(384, 407);
             this.DropPanel.TabIndex = 5;
             this.DropPanel.Click += new System.EventHandler(this.DropPanel_Click);
             this.DropPanel.DragDrop += new System.Windows.Forms.DragEventHandler(this.DropPanel_DragDrop);
@@ -114,9 +115,9 @@ namespace Osu20XXML.WindowsForm
             // DropLabel
             // 
             this.DropLabel.Font = new System.Drawing.Font("Segoe UI", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.DropLabel.Location = new System.Drawing.Point(3, 119);
+            this.DropLabel.Location = new System.Drawing.Point(-2, 163);
             this.DropLabel.Name = "DropLabel";
-            this.DropLabel.Size = new System.Drawing.Size(378, 76);
+            this.DropLabel.Size = new System.Drawing.Size(385, 76);
             this.DropLabel.TabIndex = 0;
             this.DropLabel.Text = "Drop .osz or .osu files here or click to choose files";
             this.DropLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
@@ -124,14 +125,14 @@ namespace Osu20XXML.WindowsForm
             // 
             // YearLabel
             // 
-            this.YearLabel.AutoSize = true;
             this.YearLabel.BackColor = System.Drawing.Color.Transparent;
             this.YearLabel.Font = new System.Drawing.Font("Segoe UI", 40F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.YearLabel.Location = new System.Drawing.Point(242, 381);
+            this.YearLabel.Location = new System.Drawing.Point(636, 361);
             this.YearLabel.Name = "YearLabel";
-            this.YearLabel.Size = new System.Drawing.Size(152, 72);
+            this.YearLabel.Size = new System.Drawing.Size(152, 63);
             this.YearLabel.TabIndex = 6;
             this.YearLabel.Text = "20XX";
+            this.YearLabel.TextAlign = System.Drawing.ContentAlignment.TopCenter;
             // 
             // fileDialog
             // 
@@ -145,68 +146,75 @@ namespace Osu20XXML.WindowsForm
             this.fileLoader.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.fileLoader_ProgressChanged);
             this.fileLoader.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.fileLoader_RunWorkerCompleted);
             // 
-            // clearButton
+            // ClearButton
             // 
-            this.clearButton.Location = new System.Drawing.Point(404, 320);
-            this.clearButton.Name = "clearButton";
-            this.clearButton.Size = new System.Drawing.Size(101, 23);
-            this.clearButton.TabIndex = 8;
-            this.clearButton.Text = "Clear All Maps";
-            this.clearButton.UseVisualStyleBackColor = true;
-            this.clearButton.Click += new System.EventHandler(this.clearButton_Click);
+            this.ClearButton.Location = new System.Drawing.Point(404, 320);
+            this.ClearButton.Name = "ClearButton";
+            this.ClearButton.Size = new System.Drawing.Size(101, 23);
+            this.ClearButton.TabIndex = 8;
+            this.ClearButton.Text = "Clear All Maps";
+            this.ClearButton.UseVisualStyleBackColor = true;
+            this.ClearButton.Click += new System.EventHandler(this.clearButton_Click);
             // 
-            // leftPageButton
+            // LeftPageButton
             // 
-            this.leftPageButton.Location = new System.Drawing.Point(662, 320);
-            this.leftPageButton.Name = "leftPageButton";
-            this.leftPageButton.Size = new System.Drawing.Size(25, 23);
-            this.leftPageButton.TabIndex = 9;
-            this.leftPageButton.Text = "<";
-            this.leftPageButton.UseVisualStyleBackColor = true;
-            this.leftPageButton.Click += new System.EventHandler(this.leftPageButton_Click);
+            this.LeftPageButton.Location = new System.Drawing.Point(662, 320);
+            this.LeftPageButton.Name = "LeftPageButton";
+            this.LeftPageButton.Size = new System.Drawing.Size(25, 23);
+            this.LeftPageButton.TabIndex = 9;
+            this.LeftPageButton.Text = "<";
+            this.LeftPageButton.UseVisualStyleBackColor = true;
+            this.LeftPageButton.Click += new System.EventHandler(this.leftPageButton_Click);
             // 
-            // rightPageButton
+            // RightPageButton
             // 
-            this.rightPageButton.Location = new System.Drawing.Point(763, 320);
-            this.rightPageButton.Name = "rightPageButton";
-            this.rightPageButton.Size = new System.Drawing.Size(25, 23);
-            this.rightPageButton.TabIndex = 10;
-            this.rightPageButton.Text = ">";
-            this.rightPageButton.UseVisualStyleBackColor = true;
-            this.rightPageButton.Click += new System.EventHandler(this.rightPageButton_Click);
+            this.RightPageButton.Location = new System.Drawing.Point(763, 320);
+            this.RightPageButton.Name = "RightPageButton";
+            this.RightPageButton.Size = new System.Drawing.Size(25, 23);
+            this.RightPageButton.TabIndex = 10;
+            this.RightPageButton.Text = ">";
+            this.RightPageButton.UseVisualStyleBackColor = true;
+            this.RightPageButton.Click += new System.EventHandler(this.rightPageButton_Click);
             // 
-            // pageLabel
+            // PageLabel
             // 
-            this.pageLabel.Enabled = false;
-            this.pageLabel.Location = new System.Drawing.Point(693, 320);
-            this.pageLabel.Name = "pageLabel";
-            this.pageLabel.Size = new System.Drawing.Size(64, 23);
-            this.pageLabel.TabIndex = 11;
-            this.pageLabel.Text = "0/0";
-            this.pageLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.pageLabel.WordWrap = false;
-            this.pageLabel.TextChanged += new System.EventHandler(this.pageLabel_TextChanged);
+            this.PageLabel.Enabled = false;
+            this.PageLabel.Location = new System.Drawing.Point(693, 320);
+            this.PageLabel.Name = "PageLabel";
+            this.PageLabel.Size = new System.Drawing.Size(64, 23);
+            this.PageLabel.TabIndex = 11;
+            this.PageLabel.Text = "0/0";
+            this.PageLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.PageLabel.WordWrap = false;
+            this.PageLabel.TextChanged += new System.EventHandler(this.pageLabel_TextChanged);
             // 
-            // searchBox
+            // SearchBox
             // 
-            this.searchBox.Location = new System.Drawing.Point(404, 349);
-            this.searchBox.Name = "searchBox";
-            this.searchBox.PlaceholderText = "Enter search terms here...";
-            this.searchBox.Size = new System.Drawing.Size(384, 23);
-            this.searchBox.TabIndex = 12;
-            this.searchBox.WordWrap = false;
-            this.searchBox.TextChanged += new System.EventHandler(this.searchBox_TextChanged);
+            this.SearchBox.Location = new System.Drawing.Point(404, 349);
+            this.SearchBox.Name = "SearchBox";
+            this.SearchBox.PlaceholderText = "Enter search terms here...";
+            this.SearchBox.Size = new System.Drawing.Size(384, 23);
+            this.SearchBox.TabIndex = 12;
+            this.SearchBox.WordWrap = false;
+            this.SearchBox.TextChanged += new System.EventHandler(this.searchBox_TextChanged);
             // 
-            // label1
+            // MappingStyleLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 24.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(12, 402);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(233, 45);
-            this.label1.TabIndex = 13;
-            this.label1.Text = "Mapping style:";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
+            this.MappingStyleLabel.Font = new System.Drawing.Font("Segoe UI", 24.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.MappingStyleLabel.Location = new System.Drawing.Point(404, 382);
+            this.MappingStyleLabel.Name = "MappingStyleLabel";
+            this.MappingStyleLabel.Size = new System.Drawing.Size(236, 56);
+            this.MappingStyleLabel.TabIndex = 13;
+            this.MappingStyleLabel.Text = "Mapping style:";
+            // 
+            // LoadOsuFolderButton
+            // 
+            this.LoadOsuFolderButton.Location = new System.Drawing.Point(511, 320);
+            this.LoadOsuFolderButton.Name = "LoadOsuFolderButton";
+            this.LoadOsuFolderButton.Size = new System.Drawing.Size(144, 23);
+            this.LoadOsuFolderButton.TabIndex = 14;
+            this.LoadOsuFolderButton.Text = "Load From Osu Folder";
+            this.LoadOsuFolderButton.UseVisualStyleBackColor = true;
             // 
             // MainWindow
             // 
@@ -214,13 +222,14 @@ namespace Osu20XXML.WindowsForm
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoValidate = System.Windows.Forms.AutoValidate.EnableAllowFocusChange;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.searchBox);
-            this.Controls.Add(this.pageLabel);
-            this.Controls.Add(this.rightPageButton);
-            this.Controls.Add(this.leftPageButton);
-            this.Controls.Add(this.clearButton);
+            this.ClientSize = new System.Drawing.Size(800, 431);
+            this.Controls.Add(this.LoadOsuFolderButton);
+            this.Controls.Add(this.MappingStyleLabel);
+            this.Controls.Add(this.SearchBox);
+            this.Controls.Add(this.PageLabel);
+            this.Controls.Add(this.RightPageButton);
+            this.Controls.Add(this.LeftPageButton);
+            this.Controls.Add(this.ClearButton);
             this.Controls.Add(this.YearLabel);
             this.Controls.Add(this.DropPanel);
             this.Controls.Add(this.MapPanel);
@@ -247,13 +256,14 @@ namespace Osu20XXML.WindowsForm
         private System.Windows.Forms.OpenFileDialog fileDialog;
         private System.ComponentModel.BackgroundWorker fileLoader;
         private System.Windows.Forms.ProgressBar fileLoadingProgressBar;
-        private System.Windows.Forms.Button clearButton;
-        private System.Windows.Forms.Button leftPageButton;
-        private System.Windows.Forms.Button rightPageButton;
-        private System.Windows.Forms.TextBox pageLabel;
-        private System.Windows.Forms.TextBox searchBox;
+        private System.Windows.Forms.Button ClearButton;
+        private System.Windows.Forms.Button LeftPageButton;
+        private System.Windows.Forms.Button RightPageButton;
+        private System.Windows.Forms.TextBox PageLabel;
+        private System.Windows.Forms.TextBox SearchBox;
         private System.Windows.Forms.Label noResultsLabel;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label MappingStyleLabel;
+        private System.Windows.Forms.Button LoadOsuFolderButton;
     }
 }
 
