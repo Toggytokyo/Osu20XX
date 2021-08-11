@@ -46,6 +46,7 @@ namespace Osu20XXML.WindowsForm
             this.SearchBox = new System.Windows.Forms.TextBox();
             this.MappingStyleLabel = new System.Windows.Forms.Label();
             this.LoadOsuFolderButton = new System.Windows.Forms.Button();
+            this.fontDialog1 = new System.Windows.Forms.FontDialog();
             this.MapPanel.SuspendLayout();
             this.DropPanel.SuspendLayout();
             this.SuspendLayout();
@@ -233,11 +234,12 @@ namespace Osu20XXML.WindowsForm
             this.Controls.Add(this.YearLabel);
             this.Controls.Add(this.DropPanel);
             this.Controls.Add(this.MapPanel);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = global::Osu20XXML.WindowsForm.Properties.Resources.XX_Icon;
             this.MaximizeBox = false;
             this.Name = "MainWindow";
             this.ShowIcon = false;
-            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Show;
+            this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
             this.Text = "Osu20XX";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.MapPanel.ResumeLayout(false);
@@ -264,6 +266,7 @@ namespace Osu20XXML.WindowsForm
         private System.Windows.Forms.Label noResultsLabel;
         private System.Windows.Forms.Label MappingStyleLabel;
         private System.Windows.Forms.Button LoadOsuFolderButton;
+        private System.Windows.Forms.FontDialog fontDialog1;
     }
 }
 

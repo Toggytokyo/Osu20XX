@@ -25,7 +25,7 @@ namespace Osu20XXML.WindowsForm
             this.Name = mapInfo.MapName + "_" + mapInfo.DiffName + "_panel";
             this.Location = new Point(0, position * 50);
             this.Size = new Size(382, 50);
-            this.BackColor = Color.DarkGray;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(192)))), ((int)(((byte)(206)))), ((int)(((byte)(207)))));
             this.BorderStyle = BorderStyle.FixedSingle;
             this.Click += new System.EventHandler(this.Map_Clicked);
 

@@ -4,11 +4,12 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <ApplicationIcon />
+    <ApplicationIcon>w9ti58zr04q31.ico</ApplicationIcon>
     <StartupObject />
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Osu20XXKeyFile.snk</AssemblyOriginatorKeyFile>
     <AssemblyName>YearPredictor</AssemblyName>
+    <Win32Resource />
   </PropertyGroup>
 
   <ItemGroup>
