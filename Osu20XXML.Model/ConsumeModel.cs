@@ -27,7 +27,7 @@ namespace Osu20XXML.Model
             MLContext mlContext = new MLContext();
 
             // Load model & create prediction engine
-            string modelPath = @"C:\Users\Anthony DiGiovanna\AppData\Local\Temp\MLVSTools\Osu20XXML\Osu20XXML.Model\MLModel.zip";
+            string modelPath = @"MLModel.zip";
             ITransformer mlModel = mlContext.Model.Load(modelPath, out var modelInputSchema);
             var predEngine = mlContext.Model.CreatePredictionEngine<ModelInput, ModelOutput>(mlModel);
 
