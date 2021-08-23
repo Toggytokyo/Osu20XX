@@ -210,6 +210,7 @@ namespace Osu20XXML.WindowsForm
             // 
             // LoadOsuFolderButton
             // 
+            this.LoadOsuFolderButton.Enabled = false;
             this.LoadOsuFolderButton.Location = new System.Drawing.Point(511, 320);
             this.LoadOsuFolderButton.Name = "LoadOsuFolderButton";
             this.LoadOsuFolderButton.Size = new System.Drawing.Size(144, 23);
