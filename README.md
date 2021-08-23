@@ -1,7 +1,7 @@
 # Osu20XX
 Osu20XX is a small program that uses machine learning to tell you what year's mapping style a map most closely resembles. Simply drag and drop a .osz or .osu file into the window and select the difficulty to see the results.
 
-I'm pretty new to machine learning and this is my first real project involving it. I'm sure I violated a few industry best practices, so if you notice anything let me know :)
+I'm pretty new to machine learning and this is my first real project involving it. I'm sure I violated a few industry best practices, so if you notice anything let me know :)  
 That being said, the ML algorithm predicts the mapping style correctly 60% of the time and is usually only off by about 1-2 years when it is wrong.
 
 I plan on adding more functionality to this into the future, including:
