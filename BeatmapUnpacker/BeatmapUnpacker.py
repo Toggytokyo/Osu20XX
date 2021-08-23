@@ -1,3 +1,4 @@
+# !!! - OUTDATED SCRIPT - NEEDS UPDATE !!!
 
 import os
 import re
