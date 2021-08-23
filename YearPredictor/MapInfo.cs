@@ -6,8 +6,12 @@ using Osu20XXML.Model;
 namespace Osu20XXML.WindowsForm
 
 {
+    /// <summary>
+    //  Container class for information on a beatmap.
+    /// </summary>
     public class MapInfo
     {
+        //Properties
         private string mapName;
         private string diffName;
         private string artistName;
@@ -20,6 +24,7 @@ namespace Osu20XXML.WindowsForm
         private float stddevDeltaTime;
         private float diffVariance;
 
+        //Default constructor
         public MapInfo()
         {
             MapName = "N/A";
@@ -35,6 +40,7 @@ namespace Osu20XXML.WindowsForm
             DiffVariance = 0;
         }
 
+        //Specific constructor
         public MapInfo(string mapName, string diffName, string artistName, string creatorName, float hp, float cs, float od, float ar, float avgDeltaTime, float stddevDeltaTime, float diffVariance)
         {
             MapName = mapName;
@@ -50,6 +56,7 @@ namespace Osu20XXML.WindowsForm
             DiffVariance = diffVariance;
         }
 
+        //Getters/setters
         public string MapName { get => mapName; set => mapName = value; }
         public string DiffName { get => diffName; set => diffName = value; }
         public float Hp { get => hp; set => hp = value; }
@@ -62,6 +69,7 @@ namespace Osu20XXML.WindowsForm
         public string ArtistName { get => artistName; set => artistName = value; }
         public string CreatorName { get => creatorName; set => creatorName = value; }
 
+        //Microsoft ML conversion function
         public ModelInput ConvertToModelInput()
         {
             ModelInput newModel = new ModelInput()
